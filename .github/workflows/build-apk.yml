@@ -30,16 +30,23 @@ jobs:
       - name: Build debug APK
         id: build
         continue-on-error: true
-        run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle_output.log
+        run: ./gradlew assembleDebug --no-daemon --stacktrace > gradle_output.log 2>&1
 
-      - name: Print error excerpt if build failed
-        if: steps.build.outcome == 'failure'
+      - name: Report result
+        if: always()
         run: |
-          echo "----- LAST 200 LINES OF GRADLE OUTPUT -----"
-          tail -n 200 gradle_output.log
-          EXCERPT=$(tail -n 60 gradle_output.log | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')
-          echo "::error::GRADLE BUILD FAILED. Tail of output:%0A$EXCERPT"
-          exit 1
+          echo "===== LAST 150 LINES OF GRADLE OUTPUT ====="
+          tail -n 150 gradle_output.log || true
+          if [ "${{ steps.build.outcome }}" = "failure" ]; then
+            EXCERPT=$(tail -n 60 gradle_output.log | sed 's/%/%25/g; s/\r/%0D/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error::GRADLE BUILD FAILED. Tail of output:%0A$EXCERPT"
+            exit 1
+          fi
+          if [ ! -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            echo "::error::Build reported success but app-debug.apk was not found at the expected path."
+            find app/build -name "*.apk" || true
+            exit 1
+          fi
 
       - name: Rename APK
         run: cp app/build/outputs/apk/debug/app-debug.apk RevisioniApp-debug.apk
