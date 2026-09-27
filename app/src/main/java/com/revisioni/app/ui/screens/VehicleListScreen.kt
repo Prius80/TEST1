@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.revisioni.app.data.Maintenance
 import com.revisioni.app.data.Vehicle
 import com.revisioni.app.data.VehicleType
 import com.revisioni.app.ui.AppViewModel
@@ -29,6 +30,7 @@ fun VehicleListScreen(
     onOpenVehicle: (Long) -> Unit
 ) {
     val vehicles by viewModel.vehicles.collectAsStateWithLifecycle(initialValue = emptyList())
+    val allMaintenances by viewModel.allMaintenances.collectAsStateWithLifecycle(initialValue = emptyList())
 
     Scaffold(
         topBar = {
@@ -62,7 +64,14 @@ fun VehicleListScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(vehicles, key = { it.id }) { vehicle ->
-                    VehicleCard(vehicle = vehicle, onClick = { onOpenVehicle(vehicle.id) })
+                    val nextMaintenance = allMaintenances
+                        .filter { it.vehicleId == vehicle.id && it.prossimaScadenza != null }
+                        .minByOrNull { it.prossimaScadenza!! }
+                    VehicleCard(
+                        vehicle = vehicle,
+                        nextMaintenance = nextMaintenance,
+                        onClick = { onOpenVehicle(vehicle.id) }
+                    )
                 }
             }
         }
@@ -70,7 +79,7 @@ fun VehicleListScreen(
 }
 
 @Composable
-private fun VehicleCard(vehicle: Vehicle, onClick: () -> Unit) {
+private fun VehicleCard(vehicle: Vehicle, nextMaintenance: Maintenance?, onClick: () -> Unit) {
     ElevatedCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -91,6 +100,10 @@ private fun VehicleCard(vehicle: Vehicle, onClick: () -> Unit) {
             DeadlineRow("Revisione", vehicle.revisioneScadenza)
             Spacer(Modifier.height(4.dp))
             DeadlineRow("Assicurazione", vehicle.assicurazioneScadenza)
+            if (nextMaintenance != null) {
+                Spacer(Modifier.height(4.dp))
+                DeadlineRow(nextMaintenance.tipo, nextMaintenance.prossimaScadenza)
+            }
         }
     }
 }

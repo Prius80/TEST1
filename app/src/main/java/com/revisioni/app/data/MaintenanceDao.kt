@@ -11,6 +11,9 @@ interface MaintenanceDao {
     @Query("SELECT * FROM maintenances")
     suspend fun getAllOnce(): List<Maintenance>
 
+    @Query("SELECT * FROM maintenances")
+    fun getAllFlow(): Flow<List<Maintenance>>
+
     @Insert
     suspend fun insert(maintenance: Maintenance): Long
 

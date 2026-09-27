@@ -76,6 +76,9 @@ fun VehicleDetailScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item { VehicleInfoCard(currentVehicle) }
+            if (maintenances.isNotEmpty()) {
+                item { MaintenanceStatsCard(maintenances) }
+            }
             item {
                 Text("Manutenzioni", style = MaterialTheme.typography.titleMedium)
             }
@@ -167,6 +170,32 @@ private fun DeadlineLine(label: String, dateMillis: Long?) {
 }
 
 @Composable
+private fun MaintenanceStatsCard(maintenances: List<Maintenance>) {
+    val totale = maintenances.sumOf { it.costo ?: 0.0 }
+    val numero = maintenances.size
+    val ultima = maintenances.maxByOrNull { it.data }
+
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            StatItem(label = "Interventi", value = numero.toString())
+            StatItem(label = "Speso totale", value = "€%.2f".format(totale))
+            StatItem(label = "Ultima", value = ultima?.let { formatDate(it.data) } ?: "-")
+        }
+    }
+}
+
+@Composable
+private fun StatItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
 private fun MaintenanceCard(m: Maintenance, onClick: () -> Unit) {
     ElevatedCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -193,6 +222,16 @@ private fun MaintenanceCard(m: Maintenance, onClick: () -> Unit) {
                     "Prossima: ${formatDate(m.prossimaScadenza)} · ${deadlineLabel(m.prossimaScadenza)}",
                     style = MaterialTheme.typography.labelMedium,
                     color = deadlineColor(m.prossimaScadenza)
+                )
+            }
+            if (m.intervalloMesi != null || m.intervalloKm != null) {
+                Text(
+                    listOfNotNull(
+                        m.intervalloMesi?.let { "ogni $it mesi" },
+                        m.intervalloKm?.let { "ogni $it km" }
+                    ).joinToString(" · "),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

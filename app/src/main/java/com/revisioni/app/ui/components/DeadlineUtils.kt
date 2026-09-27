@@ -46,3 +46,14 @@ fun deadlineLabel(millis: Long?): String {
         else -> "Scade tra $days giorni"
     }
 }
+
+/** Aggiunge un numero di mesi a una data (epoch millis), mantenendo il giorno del mese. */
+fun addMonths(baseMillis: Long, months: Int): Long {
+    val cal = Calendar.getInstance().apply {
+        timeInMillis = baseMillis
+        add(Calendar.MONTH, months)
+        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }
+    return cal.timeInMillis
+}

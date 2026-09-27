@@ -21,6 +21,8 @@ class AppRepository(private val db: AppDatabase) {
     fun maintenancesFor(vehicleId: Long): Flow<List<Maintenance>> =
         db.maintenanceDao().getForVehicle(vehicleId)
 
+    val allMaintenances: Flow<List<Maintenance>> = db.maintenanceDao().getAllFlow()
+
     suspend fun getAllMaintenancesOnce(): List<Maintenance> = db.maintenanceDao().getAllOnce()
 
     suspend fun addMaintenance(maintenance: Maintenance): Long =

@@ -10,8 +10,13 @@ giorno stesso).
 - Scheda per ogni veicolo (auto o moto): nome, targa, marca, modello, anno, note.
 - Date di scadenza revisione / assicurazione / bollo, con indicatore colorato
   (verde / arancio / rosso) in base all'urgenza.
-- Storico manutenzioni per veicolo: tipo, data, km, costo, officina, note e promemoria
-  per la prossima manutenzione.
+- Storico manutenzioni per veicolo: tipo (scelto da un elenco predefinito o libero),
+  data, km, costo, officina, note.
+- Promemoria ricorrenti: imposta "ogni tot mesi" e la prossima scadenza della
+  manutenzione viene calcolata e notificata automaticamente.
+- Riepilogo per veicolo: numero di interventi, spesa totale e data dell'ultimo intervento.
+- La prossima manutenzione in scadenza è visibile anche nella lista principale, sotto
+  a revisione e assicurazione.
 - Notifiche locali giornaliere (WorkManager) che avvisano quando una scadenza è vicina,
   anche se l'app non è aperta. Le notifiche riprendono automaticamente dopo il riavvio
   del telefono.

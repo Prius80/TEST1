@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Vehicle::class, Maintenance::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -26,7 +26,11 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "revisioni_app.db"
-                ).build()
+                )
+                    // App in fase di sviluppo: in caso di cambio schema si riparte
+                    // con un database pulito invece di scrivere migrazioni manuali.
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

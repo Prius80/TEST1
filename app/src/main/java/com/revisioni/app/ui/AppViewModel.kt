@@ -20,6 +20,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun maintenancesFor(vehicleId: Long): Flow<List<Maintenance>> =
         repository.maintenancesFor(vehicleId)
 
+    val allMaintenances: Flow<List<Maintenance>> = repository.allMaintenances
+
     fun addVehicle(vehicle: Vehicle, onDone: (Long) -> Unit = {}) {
         viewModelScope.launch {
             val id = repository.addVehicle(vehicle)
