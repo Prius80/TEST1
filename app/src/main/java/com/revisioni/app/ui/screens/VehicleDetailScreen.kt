@@ -95,21 +95,23 @@ fun VehicleDetailScreen(
     }
 
     if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Eliminare il veicolo?") },
-            text = { Text("Verranno eliminate anche tutte le manutenzioni associate. L'operazione non è reversibile.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteVehicle(currentVehicle)
-                    showDeleteDialog = false
-                    onVehicleDeleted()
-                }) { Text("Elimina") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Annulla") }
-            }
-        )
+        currentVehicle?.let { vehicleToDelete ->
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("Eliminare il veicolo?") },
+                text = { Text("Verranno eliminate anche tutte le manutenzioni associate. L'operazione non è reversibile.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.deleteVehicle(vehicleToDelete)
+                        showDeleteDialog = false
+                        onVehicleDeleted()
+                    }) { Text("Elimina") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) { Text("Annulla") }
+                }
+            )
+        }
     }
 }
 
