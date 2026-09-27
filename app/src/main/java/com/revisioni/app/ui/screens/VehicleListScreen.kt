@@ -1,0 +1,113 @@
+package com.revisioni.app.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.TwoWheeler
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.revisioni.app.data.Vehicle
+import com.revisioni.app.data.VehicleType
+import com.revisioni.app.ui.AppViewModel
+import com.revisioni.app.ui.components.deadlineColor
+import com.revisioni.app.ui.components.deadlineLabel
+import com.revisioni.app.ui.components.formatDate
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VehicleListScreen(
+    viewModel: AppViewModel,
+    onAddVehicle: () -> Unit,
+    onOpenVehicle: (Long) -> Unit
+) {
+    val vehicles by viewModel.vehicles.collectAsStateWithLifecycle(initialValue = emptyList())
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Le mie scadenze") })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddVehicle) {
+                Icon(Icons.Default.Add, contentDescription = "Aggiungi veicolo")
+            }
+        }
+    ) { padding ->
+        if (vehicles.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Nessun veicolo ancora", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Tocca + per aggiungere la tua prima auto o moto",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(vehicles, key = { it.id }) { vehicle ->
+                    VehicleCard(vehicle = vehicle, onClick = { onOpenVehicle(vehicle.id) })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun VehicleCard(vehicle: Vehicle, onClick: () -> Unit) {
+    ElevatedCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = if (vehicle.type == VehicleType.AUTO) Icons.Default.DirectionsCar else Icons.Default.TwoWheeler,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.width(8.dp))
+                Column {
+                    Text(vehicle.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    if (vehicle.targa.isNotBlank()) {
+                        Text(vehicle.targa, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            DeadlineRow("Revisione", vehicle.revisioneScadenza)
+            Spacer(Modifier.height(4.dp))
+            DeadlineRow("Assicurazione", vehicle.assicurazioneScadenza)
+        }
+    }
+}
+
+@Composable
+private fun DeadlineRow(label: String, dateMillis: Long?) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("$label: ${formatDate(dateMillis)}", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            deadlineLabel(dateMillis),
+            style = MaterialTheme.typography.labelMedium,
+            color = deadlineColor(dateMillis),
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
