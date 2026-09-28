@@ -64,6 +64,18 @@ jobs:
           cp app/build/outputs/apk/debug/app-debug.apk RevisioniApp-debug.apk
           cp app/build/outputs/apk/release/app-release-unsigned.apk RevisioniApp-release-unsigned.apk
 
+      - name: Package apksigner + zipalign (build-tools) for offline signing
+        run: |
+          set -e
+          BT_DIR=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n 1)
+          echo "Using build-tools at: $BT_DIR"
+          mkdir -p apksigner-tools
+          cp "$BT_DIR/apksigner" apksigner-tools/ || true
+          cp "$BT_DIR/lib/apksigner.jar" apksigner-tools/ || true
+          cp "$BT_DIR/zipalign" apksigner-tools/ || true
+          ls -la apksigner-tools
+          tar -czf apksigner-tools.tar.gz apksigner-tools
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -71,6 +83,7 @@ jobs:
           path: |
             RevisioniApp-debug.apk
             RevisioniApp-release-unsigned.apk
+            apksigner-tools.tar.gz
 
       - name: Upload gradle log always
         if: always()
@@ -92,6 +105,7 @@ jobs:
           files: |
             RevisioniApp-debug.apk
             RevisioniApp-release-unsigned.apk
+            apksigner-tools.tar.gz
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
