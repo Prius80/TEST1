@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.revisioni.app.BuildConfig
 import com.revisioni.app.data.Maintenance
 import com.revisioni.app.data.Vehicle
 import com.revisioni.app.data.VehicleType
@@ -31,10 +33,18 @@ fun VehicleListScreen(
 ) {
     val vehicles by viewModel.vehicles.collectAsStateWithLifecycle(initialValue = emptyList())
     val allMaintenances by viewModel.allMaintenances.collectAsStateWithLifecycle(initialValue = emptyList())
+    var showAboutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Le mie scadenze") })
+            TopAppBar(
+                title = { Text("Le mie scadenze") },
+                actions = {
+                    IconButton(onClick = { showAboutDialog = true }) {
+                        Icon(Icons.Default.Info, contentDescription = "Informazioni sull'app")
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddVehicle) {
@@ -75,6 +85,23 @@ fun VehicleListScreen(
                 }
             }
         }
+    }
+
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = { Text("Le mie scadenze") },
+            text = {
+                Column {
+                    Text("Versione ${BuildConfig.VERSION_NAME}")
+                    Spacer(Modifier.height(8.dp))
+                    Text("Sviluppato da Roberto De Paolis")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) { Text("Chiudi") }
+            }
+        )
     }
 }
 
