@@ -17,6 +17,10 @@ giorno stesso).
 - Riepilogo per veicolo: numero di interventi, spesa totale e data dell'ultimo intervento.
 - La prossima manutenzione in scadenza è visibile anche nella lista principale, sotto
   a revisione e assicurazione.
+- Esportazione delle schede: PDF da condividere o salvare, oppure file di backup (.json)
+  che l'app sa reimportare. Dalla scheda di un veicolo si esporta quel veicolo, dalla lista
+  si esportano tutti. Importando un file, i veicoli già presenti (stessa targa) non vengono
+  duplicati: ricevono solo le manutenzioni che non hanno ancora.
 - Notifiche locali giornaliere (WorkManager) che avvisano quando una scadenza è vicina,
   anche se l'app non è aperta. Le notifiche riprendono automaticamente dopo il riavvio
   del telefono.

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.*
@@ -20,6 +21,7 @@ import com.revisioni.app.data.Maintenance
 import com.revisioni.app.data.Vehicle
 import com.revisioni.app.data.VehicleType
 import com.revisioni.app.ui.AppViewModel
+import com.revisioni.app.ui.components.ExportMenuButton
 import com.revisioni.app.ui.components.deadlineColor
 import com.revisioni.app.ui.components.deadlineLabel
 import com.revisioni.app.ui.components.formatDate
@@ -40,6 +42,13 @@ fun VehicleListScreen(
             TopAppBar(
                 title = { Text("Le mie scadenze") },
                 actions = {
+                    ExportMenuButton(
+                        viewModel = viewModel,
+                        loadBundles = { viewModel.loadAllBundles() },
+                        icon = Icons.Default.ImportExport,
+                        contentDescription = "Esporta o importa le schede",
+                        allowImport = true
+                    )
                     IconButton(onClick = { showAboutDialog = true }) {
                         Icon(Icons.Default.Info, contentDescription = "Informazioni sull'app")
                     }

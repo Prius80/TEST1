@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.revisioni.app.data.*
+import com.revisioni.app.data.backup.BackupManager
+import com.revisioni.app.data.backup.ImportResult
+import com.revisioni.app.data.backup.VehicleBundle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -48,6 +51,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteMaintenance(maintenance: Maintenance) {
         viewModelScope.launch { repository.deleteMaintenance(maintenance) }
     }
+
+    // ---- esportazione / importazione ----
+
+    suspend fun loadBundle(vehicleId: Long): List<VehicleBundle> = repository.loadBundle(vehicleId)
+
+    suspend fun loadAllBundles(): List<VehicleBundle> = repository.loadAllBundles()
+
+    /** Legge il testo di un backup e lo importa. Lancia [BackupFormatException] se il file non è valido. */
+    suspend fun importBackup(text: String): ImportResult =
+        repository.importBundles(BackupManager.parse(text))
 
     companion object {
         fun factory(application: Application): ViewModelProvider.Factory =

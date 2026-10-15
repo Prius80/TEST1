@@ -30,7 +30,7 @@ jobs:
       - name: Build debug APK
         id: build
         continue-on-error: true
-        run: ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace > gradle_output.log 2>&1
+        run: ./gradlew testDebugUnitTest assembleDebug assembleRelease --no-daemon --stacktrace > gradle_output.log 2>&1
 
       - name: Report result
         if: always()
@@ -40,7 +40,7 @@ jobs:
           if [ "${{ steps.build.outcome }}" = "failure" ]; then
             echo "===== COMPILER ERROR LINES (e:) ====="
             grep -n "^e: " gradle_output.log || true
-            COMPILER_ERRORS=$(grep "^e: " gradle_output.log | head -n 40)
+            COMPILER_ERRORS=$(grep -E "^e: |FAILED|AssertionError|expected:" gradle_output.log | head -n 40)
             if [ -z "$COMPILER_ERRORS" ]; then
               COMPILER_ERRORS=$(tail -n 80 gradle_output.log)
             fi

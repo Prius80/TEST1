@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.revisioni.app.data.Maintenance
 import com.revisioni.app.data.Vehicle
 import com.revisioni.app.ui.AppViewModel
+import com.revisioni.app.ui.components.ExportMenuButton
 import com.revisioni.app.ui.components.deadlineColor
 import com.revisioni.app.ui.components.deadlineLabel
 import com.revisioni.app.ui.components.formatDate
@@ -46,6 +47,12 @@ fun VehicleDetailScreen(
                     }
                 },
                 actions = {
+                    ExportMenuButton(
+                        viewModel = viewModel,
+                        loadBundles = { viewModel.loadBundle(vehicleId) },
+                        icon = Icons.Default.Share,
+                        contentDescription = "Condividi o esporta questa scheda"
+                    )
                     IconButton(onClick = onEditVehicle) {
                         Icon(Icons.Default.Edit, contentDescription = "Modifica")
                     }
