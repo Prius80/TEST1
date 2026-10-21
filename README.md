@@ -21,6 +21,12 @@ giorno stesso).
   che l'app sa reimportare. Dalla scheda di un veicolo si esporta quel veicolo, dalla lista
   si esportano tutti. Importando un file, i veicoli già presenti (stessa targa) non vengono
   duplicati: ricevono solo le manutenzioni che non hanno ancora.
+- Inserimento delle scadenze in **Google Calendar**: il pulsante calendario (nella lista per
+  tutti i veicoli, nella scheda per quel veicolo) crea un evento "tutto il giorno" per
+  revisione, assicurazione, bollo e prossime manutenzioni, con promemoria alle 9:00 di
+  30 giorni, 7 giorni e 1 giorno prima. Si può ripremere dopo aver cambiato una data:
+  gli eventi già creati vengono aggiornati, non duplicati. Se togli una scadenza o elimini
+  una manutenzione o un veicolo, l'evento corrispondente sparisce dal calendario.
 - Notifiche locali giornaliere (WorkManager) che avvisano quando una scadenza è vicina,
   anche se l'app non è aperta. Le notifiche riprendono automaticamente dopo il riavvio
   del telefono.
@@ -44,6 +50,7 @@ Requisiti minimi: Android 8.0 (API 26) o superiore.
 ```
 app/src/main/java/com/revisioni/app/
 ├── data/                     Entità Room (Vehicle, Maintenance), DAO, database, repository
+│   ├── calendar/             Scadenze -> eventi Google Calendar (Calendar Provider)
 │   └── notification/         Worker per il controllo scadenze, notifiche, ricevitore di boot
 ├── ui/
 │   ├── screens/               Schermate Compose (lista, dettaglio, form)
@@ -56,6 +63,10 @@ app/src/main/java/com/revisioni/app/
 ## Note
 
 - La prima apertura chiede il permesso di inviare notifiche (richiesto da Android 13+).
+- Il primo inserimento in calendario chiede il permesso di leggere e scrivere il calendario.
+  Gli eventi vanno nel calendario principale dell'account Google configurato sul telefono
+  (serve l'app Google Calendar con un account collegato) e da lì si sincronizzano su
+  Google Calendar e sugli altri dispositivi.
 - Puoi rigenerare il file `gradle-wrapper.jar` mancante lasciando che Android Studio lo
   scarichi automaticamente al primo sync, oppure eseguendo `gradle wrapper` se hai
   Gradle installato a parte.

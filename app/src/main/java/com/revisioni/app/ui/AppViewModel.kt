@@ -9,8 +9,11 @@ import com.revisioni.app.data.*
 import com.revisioni.app.data.backup.BackupManager
 import com.revisioni.app.data.backup.ImportResult
 import com.revisioni.app.data.backup.VehicleBundle
+import com.revisioni.app.data.calendar.CalendarSync
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -37,7 +40,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun deleteVehicle(vehicle: Vehicle) {
-        viewModelScope.launch { repository.deleteVehicle(vehicle) }
+        viewModelScope.launch {
+            // Prima gli eventi che l'app aveva creato nel calendario, poi i dati del veicolo.
+            withContext(Dispatchers.IO) { CalendarSync.removeVehicle(getApplication(), vehicle.id) }
+            repository.deleteVehicle(vehicle)
+        }
     }
 
     fun addMaintenance(maintenance: Maintenance) {
@@ -49,7 +56,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun deleteMaintenance(maintenance: Maintenance) {
-        viewModelScope.launch { repository.deleteMaintenance(maintenance) }
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                CalendarSync.removeMaintenance(getApplication(), maintenance.vehicleId, maintenance.id)
+            }
+            repository.deleteMaintenance(maintenance)
+        }
     }
 
     // ---- esportazione / importazione ----
