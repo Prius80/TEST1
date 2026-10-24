@@ -21,6 +21,7 @@ import com.revisioni.app.data.Maintenance
 import com.revisioni.app.data.Vehicle
 import com.revisioni.app.data.VehicleType
 import com.revisioni.app.ui.AppViewModel
+import com.revisioni.app.ui.components.CalendarSyncButton
 import com.revisioni.app.ui.components.ExportMenuButton
 import com.revisioni.app.ui.components.deadlineColor
 import com.revisioni.app.ui.components.deadlineLabel
@@ -42,6 +43,10 @@ fun VehicleListScreen(
             TopAppBar(
                 title = { Text("Le mie scadenze") },
                 actions = {
+                    CalendarSyncButton(
+                        loadBundles = { viewModel.loadAllBundles() },
+                        contentDescription = "Inserisci tutte le scadenze nel calendario"
+                    )
                     ExportMenuButton(
                         viewModel = viewModel,
                         loadBundles = { viewModel.loadAllBundles() },
